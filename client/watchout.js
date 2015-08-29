@@ -57,8 +57,8 @@
   setInterval(move, 2000);
 
   var Player = function() {
-    this.x = gameOptions.height * 0.5;
-    this.y = gameOptions.width * 0.5;
+    this.x = gameOptions.width / 2;
+    this.y = gameOptions.height / 2;
   };
 
   Player.prototype.render = function(x, y) {
@@ -70,11 +70,34 @@
     setTimeout(this.detectCollision, 25);
   };
 
-  var createPlayer = function() {
-    window.players.push(new Player());
-  };
 
-  // createEnemies();
+  var drag = d3.behavior.drag()
+      .on("drag", dragmove);
+
+  var radius = 8;
+  function dragmove(d) {
+    d3.select(this)
+        .attr("cx", d.x = Math.max(radius, Math.min(gameOptions.width - radius, d3.event.x)))
+        .attr("cy", d.y = Math.max(radius, Math.min(gameOptions.height - radius, d3.event.y)));
+  }
+
+  var player1 = new Player();
+
+  var createPlayer = (function() {
+    window.players.push(player1);
+
+    return d3.select("svg").selectAll("#player")
+    .data(window.players)
+    .enter()
+    .append("svg:circle")
+    .call(drag)
+    .attr("cx", function(d) {return d.x})
+    .attr("cy", function(d){return d.y})
+    .attr("r", radius)
+    .attr("fill", "orange")
+    .attr("stroke", "black");
+  })();
+
 
 }).call(this);
 
