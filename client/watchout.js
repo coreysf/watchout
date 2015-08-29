@@ -65,34 +65,47 @@
 
 
   var move = function() {
-      return d3.selectAll("circle")
+      return d3.select("svg").selectAll(".enemy")
         .data(window.enemies)
         .transition()
         .duration(1000)
-        .attr("cx", function(d) {
+        .attr("x", function(d) {
           d.x = Math.random() * 700;
           return d.x;
         })
-        .attr("cy", function(d) {
+        .attr("y", function(d) {
           d.y = Math.random() * 400;
           return d.y;
         });
+        // .style({"-ms-transform": "rotate(36deg)", 
+        // "-webkit-transform": "rotate(36deg)",
+        // "transform": "rotate(36deg)",
+        // "-ms-transition": "1s transform linear",
+        // "-webkit-transition": "1s transform linear; -0- transition: 5s transform linear",
+        // "transition": "1s transform linear",
+        // "-ms-transform-origin": "50% 50%",
+        // "-webkit-transform-origin": "50% 50%",
+        // "transform-origin": "50% 50%"});
   };
 
   var createEnemies = (function() {
     for (var i = 0; i < gameOptions.nEnemies; i++) {
       window.enemies.push(new Enemy(i));
     }
-    return d3.select("svg").selectAll("circle")
+    return d3.select("svg").selectAll("image")
       .data(window.enemies)
       .enter()
-      .append("svg:circle")
-      .attr("cx", function(d) {return d.x})
-      .attr("cy", function(d){return d.y})
-      .attr("r", 10)
+      .append("image")
+      .classed("enemy", true)
+      .attr("xlink:href", "./images/ninjastar.png")
+      .attr("width", 40)
+      .attr("height", 40)
+      .attr("x", function(d) {return d.x})
+      .attr("y", function(d){return d.y})
+      .attr("r", 10);
       // .attr("class", "enemy")
-      .attr("fill", "black")
-      .attr("stroke", "black");
+      // .attr("fill", "black")
+      // .attr("stroke", "black");
 
   })();
 
@@ -130,7 +143,7 @@
     .attr("r", radius)
     .attr("id", "player")
     .attr("fill", "#ff6600")
-    .attr("stroke", "black");
+    .attr("stroke", "#ff6600");
   })();
 
   setInterval(function() {
