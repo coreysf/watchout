@@ -31,20 +31,30 @@
 
   var Enemy = function(id) {
     this.id = id;
-    this.x = Math.random() * 100;
-    this.y = Math.random() * 100;
+    this.x = Math.random() * 700;
+    this.y = Math.random() * 400;
   };
 
-  Enemy.prototype.move = function() {
-
+  var move = function() {
+      return d3.selectAll("circle").data(window.enemies).transition().duration(1000).attr("cx", function() {return Math.random() * 700;}).attr("cy", function() {return Math.random() * 400;});
   };
 
-  var createEnemies = function() {
+  var createEnemies = (function() {
     for (var i = 0; i < gameOptions.nEnemies; i++) {
       window.enemies.push(new Enemy(i));
     }
-    return d3.select("svg").selectAll("circle").data(window.enemies).enter().append("circle").attr("cx", function(d) {return d.x}).attr("cy", function(d){return d.y}).attr("r", 25).attr("fill", "black").attr("stroke", "red");
-  };
+    return d3.select("svg").selectAll("circle")
+      .data(window.enemies)
+      .enter()
+      .append("svg:circle")
+      .attr("cx", function(d) {return d.x})
+      .attr("cy", function(d){return d.y})
+      .attr("r", 10)
+      .attr("fill", "black")
+      .attr("stroke", "red");
+  })();
+
+  setInterval(move, 2000);
 
   var Player = function() {
     this.x = gameOptions.height * 0.5;
@@ -64,7 +74,7 @@
     window.players.push(new Player());
   };
 
-  createEnemies();
+  // createEnemies();
 
 }).call(this);
 
