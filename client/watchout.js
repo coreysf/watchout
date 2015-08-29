@@ -34,32 +34,31 @@
     return d3.select("#numCollisions").text(gameStats.collisions.toString());
   };
 
-  // var increaseScore = function() {
-  //   gameStats.score++;
 
-  // };
   var detectCollision = function() {
     for (var i = 0; i < window.enemies.length; i++) {
       var distanceX = window.enemies[i].x - d3.select("#player").attr("cx");
       var distanceY = window.enemies[i].y - d3.select("#player").attr("cy");
       var totalDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
       if (totalDistance < radius + enemyRadius) {
-        return 1;
-        // gameStats.collisions++;
-        // updateCollisions();
+        window.enemies[i].collisionStatus = true;
         if (gameStats.score > gameStats.highScore) {
           gameStats.highScore = gameStats.score;
         }
         gameStats.score = 0;
+      } else {
+        if (window.enemies[i].collisionStatus === true) {
+          gameStats.collisions++;
+          window.enemies[i].collisionStatus = false;
+        }
       }
     }
-    return 0;
-
   };
 
 
   var Enemy = function(id) {
     this.id = id;
+    this.collisionStatus = false;
     this.x = Math.random() * 700;
     this.y = Math.random() * 400;
   };
@@ -104,11 +103,6 @@
     this.y = gameOptions.height / 2;
   };
 
-  Player.prototype.render = function(x, y) {
-
-  };
-
-
   var dragmove = function(d) {
     d3.select(this)
         .attr("cx", d.x = Math.max(radius, Math.min(gameOptions.width - radius, d3.event.x)))
@@ -143,7 +137,7 @@
     gameStats.score++;
     updateCurrentScore();
     updateHighScore();
-    gameStats.collisions += detectCollision();
+    detectCollision();
     updateCollisions();
   }, 50);
 
