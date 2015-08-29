@@ -11,7 +11,8 @@
 
   var gameStats = {
     score: 0,
-    highScore: 0
+    highScore: 0,
+    collisions: 0
   };
 
   // var axes = {
@@ -29,6 +30,21 @@
     return d3.select("#bestScore").text(gameStats.highScore.toString());
   };
 
+  var updateCollisions = function() {
+    return d3.select("#numCollisions").text(gameStats.collisions.toString());
+  };
+
+  // var increaseScore = function() {
+  //   gameStats.score++;
+
+  // };
+
+  setInterval(function() {
+    gameStats.score++;
+    updateCurrentScore();
+    updateHighScore();
+  }, 50);
+
   var Enemy = function(id) {
     this.id = id;
     this.x = Math.random() * 700;
@@ -41,18 +57,30 @@
         .transition()
         .duration(1000)
         .tween("circle", function(d) {
-          var detectCollision = function() {
+          var detectCollision = function(data) {
+            // console.log(d3.select("#player").attr("cx"));
+            console.log("score: "+gameStats.score);
+            console.log("d.x: " + d.x);
+            console.log("d.y: " + d.y);
             var distanceX = d.x - d3.select("#player").attr("cx");
             var distanceY = d.y - d3.select("#player").attr("cy");
             var totalDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+            console.log("total distance: " + totalDistance);
             if (totalDistance < radius + enemyRadius) {
+              gameStats.collisions++;
+              updateCollisions();
               if (gameStats.score > gameStats.highScore) {
                 gameStats.highScore = gameStats.score;
+                // updateHighScore();
               }
               gameStats.score = 0;
+              // updateCurrentScore();
             }
           };
+          detectCollision(d);
           
+          
+          return;
         })
         .attr("cx", function() {return Math.random() * 700;})
         .attr("cy", function() {return Math.random() * 400;});
@@ -70,13 +98,7 @@
       .attr("cy", function(d){return d.y})
       .attr("r", 10)
       .attr("fill", "black")
-      .attr("stroke", "black")
-      .transition()
-      .tween("text", function() {
-        var i = XXX;
-          return XXX;
-          };
-      });
+      .attr("stroke", "black");
 
   })();
 
@@ -123,6 +145,7 @@
     .attr("cx", function(d) {return d.x})
     .attr("cy", function(d){return d.y})
     .attr("r", radius)
+    .attr("id", "player")
     .attr("fill", "#ff6600")
     .attr("stroke", "black");
   })();
