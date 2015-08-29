@@ -14,10 +14,10 @@
     highScore: 0
   };
 
-  var axes = {
-    x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
-    y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
-  };
+  // var axes = {
+  //   x: d3.scale.linear().domain([0, 100]).range([0, gameOptions.width]),
+  //   y: d3.scale.linear().domain([0, 100]).range([0, gameOptions.height])
+  // };
 
   var gameBoard = d3.select(".container").append("svg:svg").attr("height", gameOptions.height).attr("width", gameOptions.width);
 
@@ -36,7 +36,26 @@
   };
 
   var move = function() {
-      return d3.selectAll("circle").data(window.enemies).transition().duration(1000).attr("cx", function() {return Math.random() * 700;}).attr("cy", function() {return Math.random() * 400;});
+      return d3.selectAll("circle")
+        .data(window.enemies)
+        .transition()
+        .duration(1000)
+        .tween("circle", function(d) {
+          var detectCollision = function() {
+            var distanceX = d.x - d3.select("#player").attr("cx");
+            var distanceY = d.y - d3.select("#player").attr("cy");
+            var totalDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+            if (totalDistance < radius + enemyRadius) {
+              if (gameStats.score > gameStats.highScore) {
+                gameStats.highScore = gameStats.score;
+              }
+              gameStats.score = 0;
+            }
+          };
+          
+        })
+        .attr("cx", function() {return Math.random() * 700;})
+        .attr("cy", function() {return Math.random() * 400;});
   };
 
   var createEnemies = (function() {
@@ -51,7 +70,14 @@
       .attr("cy", function(d){return d.y})
       .attr("r", 10)
       .attr("fill", "black")
-      .attr("stroke", "red");
+      .attr("stroke", "black")
+      .transition()
+      .tween("text", function() {
+        var i = XXX;
+          return XXX;
+          };
+      });
+
   })();
 
   setInterval(move, 2000);
@@ -65,21 +91,24 @@
 
   };
 
-  Player.prototype.detectCollision = function() {
+  var detectCollision = function() {
+    v = player1.x - this.x;
 
-    setTimeout(this.detectCollision, 25);
+    
   };
 
+
+  var dragmove = function(d) {
+    d3.select(this)
+        .attr("cx", d.x = Math.max(radius, Math.min(gameOptions.width - radius, d3.event.x)))
+        .attr("cy", d.y = Math.max(radius, Math.min(gameOptions.height - radius, d3.event.y)));
+  };
 
   var drag = d3.behavior.drag()
       .on("drag", dragmove);
 
   var radius = 8;
-  function dragmove(d) {
-    d3.select(this)
-        .attr("cx", d.x = Math.max(radius, Math.min(gameOptions.width - radius, d3.event.x)))
-        .attr("cy", d.y = Math.max(radius, Math.min(gameOptions.height - radius, d3.event.y)));
-  }
+  var enemyRadius = 10;
 
   var player1 = new Player();
 
@@ -94,7 +123,7 @@
     .attr("cx", function(d) {return d.x})
     .attr("cy", function(d){return d.y})
     .attr("r", radius)
-    .attr("fill", "orange")
+    .attr("fill", "#ff6600")
     .attr("stroke", "black");
   })();
 
