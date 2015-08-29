@@ -38,12 +38,25 @@
   //   gameStats.score++;
 
   // };
+  var detectCollision = function() {
+    for (var i = 0; i < window.enemies.length; i++) {
+      var distanceX = window.enemies[i].x - d3.select("#player").attr("cx");
+      var distanceY = window.enemies[i].y - d3.select("#player").attr("cy");
+      var totalDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+      if (totalDistance < radius + enemyRadius) {
+        return 1;
+        // gameStats.collisions++;
+        // updateCollisions();
+        if (gameStats.score > gameStats.highScore) {
+          gameStats.highScore = gameStats.score;
+        }
+        gameStats.score = 0;
+      }
+    }
+    return 0;
 
-  setInterval(function() {
-    gameStats.score++;
-    updateCurrentScore();
-    updateHighScore();
-  }, 50);
+  };
+
 
   var Enemy = function(id) {
     this.id = id;
@@ -51,39 +64,20 @@
     this.y = Math.random() * 400;
   };
 
+
   var move = function() {
       return d3.selectAll("circle")
         .data(window.enemies)
         .transition()
         .duration(1000)
-        .tween("circle", function(d) {
-          var detectCollision = function(data) {
-            // console.log(d3.select("#player").attr("cx"));
-            console.log("score: "+gameStats.score);
-            console.log("d.x: " + d.x);
-            console.log("d.y: " + d.y);
-            var distanceX = d.x - d3.select("#player").attr("cx");
-            var distanceY = d.y - d3.select("#player").attr("cy");
-            var totalDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-            console.log("total distance: " + totalDistance);
-            if (totalDistance < radius + enemyRadius) {
-              gameStats.collisions++;
-              updateCollisions();
-              if (gameStats.score > gameStats.highScore) {
-                gameStats.highScore = gameStats.score;
-                // updateHighScore();
-              }
-              gameStats.score = 0;
-              // updateCurrentScore();
-            }
-          };
-          detectCollision(d);
-          
-          
-          return;
+        .attr("cx", function(d) {
+          d.x = Math.random() * 700;
+          return d.x;
         })
-        .attr("cx", function() {return Math.random() * 700;})
-        .attr("cy", function() {return Math.random() * 400;});
+        .attr("cy", function(d) {
+          d.y = Math.random() * 400;
+          return d.y;
+        });
   };
 
   var createEnemies = (function() {
@@ -97,6 +91,7 @@
       .attr("cx", function(d) {return d.x})
       .attr("cy", function(d){return d.y})
       .attr("r", 10)
+      // .attr("class", "enemy")
       .attr("fill", "black")
       .attr("stroke", "black");
 
@@ -111,12 +106,6 @@
 
   Player.prototype.render = function(x, y) {
 
-  };
-
-  var detectCollision = function() {
-    v = player1.x - this.x;
-
-    
   };
 
 
@@ -150,6 +139,13 @@
     .attr("stroke", "black");
   })();
 
+  setInterval(function() {
+    gameStats.score++;
+    updateCurrentScore();
+    updateHighScore();
+    gameStats.collisions += detectCollision();
+    updateCollisions();
+  }, 50);
 
 }).call(this);
 
