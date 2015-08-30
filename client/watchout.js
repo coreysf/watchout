@@ -35,7 +35,32 @@
   };
 
 
-  var detectCollision = function() {
+  // var detectCollision = function(d) {
+  //     // var oldX = d.x;
+  //     // var oldY = d.y;
+  //     // d.collisionStatus = false;
+      
+  //     return function(time) {
+  //       var distanceX = (d.x - d3.select("#player").attr("cx")) * time;
+  //       var distanceY = (d.y - d3.select("#player").attr("cy")) * time;
+  //       var totalDistance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+  //       if (totalDistance < radius + enemyRadius && d.collisionStatus === false) {
+  //         d.collisionStatus = true;
+  //         if (gameStats.score > gameStats.highScore) {
+  //           gameStats.highScore = gameStats.score;
+  //         }
+  //         gameStats.score = 0;
+  //         gameStats.collisions++;
+  //       } 
+  //       // else {
+  //       //   if (d.collisionStatus === true) {
+  //       //     d.collisionStatus = false;
+  //       //   }
+  //       // }
+  //     };
+  // };
+
+  var detectCollision = function(d) {
     for (var i = 0; i < window.enemies.length; i++) {
       var distanceX = window.enemies[i].x - d3.select("#player").attr("cx");
       var distanceY = window.enemies[i].y - d3.select("#player").attr("cy");
@@ -69,6 +94,7 @@
         .data(window.enemies)
         .transition()
         .duration(1000)
+        // .tween(".enemy", detectCollision)
         .attr("x", function(d) {
           d.x = Math.random() * 700;
           return d.x;
@@ -108,6 +134,7 @@
       // .attr("stroke", "black");
 
   })();
+  d3.timer(detectCollision);
 
   setInterval(move, 2000);
 
